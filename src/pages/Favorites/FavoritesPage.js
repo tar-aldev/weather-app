@@ -1,24 +1,35 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Container, Typography, Box } from '@material-ui/core';
-import { observer } from 'mobx-react';
+import { observer, useObserver } from 'mobx-react';
+import { weatherStore } from '../../mobx/weater.store';
+
 
 const FavoritesPage = () => {
 
-  /* render() {
-    const favoriteItems = this.props;
+  useEffect(() => {
+    weatherStore.getFavoriteCities()
+    return () => { };
+  }, [])
 
-    console.log(favoriteItems);
- */
-  return (
-    <Container>
-      <Box display='flex' justifyContent='center'>
-        <Typography variant='h6'>
-          Bookmarked cities
+  return useObserver(() => {
+    const { favoriteCities } = weatherStore;
+
+    return (
+      <Container>
+        <Box display='flex' justifyContent='center'>
+          <Typography variant='h6'>
+            Bookmarked cities
           </Typography>
-      </Box>
-    </Container >
-  )/* 
-  } */
+        </Box>
+        {favoriteCities.map((favoriteCity) => {
+          console.log(favoriteCity);
+          return (
+            <p key={favoriteCity.id}>Favorite City</p>
+          )
+        })}
+      </Container>
+    )
+  })
 }
 
 export default observer(FavoritesPage);

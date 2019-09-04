@@ -29,6 +29,10 @@ const weatherService = () => {
     return copy;
   }
 
+  const pickWeatherFields = (weatherItem) => {
+    return pick(weatherItem, ['coord', 'id', 'main', 'name', 'weather', 'wind']);
+  }
+
   return {
     getWeatherByCityName: async (cityName) => {
       const { data } = await axios.get(`${weatherApiBaseUrl}/weather`, {
@@ -37,7 +41,19 @@ const weatherService = () => {
         }
       })
       const modifiedData = modifyWeatherIconLink(data);
-      return pick(modifiedData, ['coord', 'id', 'main', 'name', 'weather', 'wind']);
+      pickWeatherFields(modifiedData);
+    },
+    getFavoriteCitiesByIds: async (citiesIds) => {
+      const promises = citiesIds.map((cityId) => {
+        return axios.get(`${weatherApiBaseUrl}/weather`, {
+          params: {
+            id: cityId
+          }
+        })
+      })
+
+      const favoriteCitiesResponses = await Promise.all(promises);
+      return favoriteCitiesResponses.map((response) => pickWeatherFields(response.data));
     }
   }
 }

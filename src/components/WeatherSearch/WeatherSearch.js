@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const WeatherSearch = () => {
+const WeatherSearch = ({ canAddToFavorites }) => {
 
   const classes = useStyles();
   const [searchString, setSearchString] = useState('');
@@ -52,6 +52,12 @@ const WeatherSearch = () => {
     }
   }
 
+  const addToFavorites = () => {
+    weatherStore.addCityToFavorites();
+    weatherStore.saveFavoriteCititesToLocalStorage();
+  }
+
+  console.log(canAddToFavorites);
   return (
     <Paper className={classes.root}>
       <InputBase
@@ -82,11 +88,17 @@ const WeatherSearch = () => {
       </IconButton>
       <Divider className={classes.divider} orientation="vertical" />
       <Tooltip title='Add city to bookmarks'>
-        <>
-          <IconButton color="primary" className={classes.iconButton} disabled={true} aria-label="directions">
+        <div>
+          <IconButton
+            color="primary"
+            className={classes.iconButton}
+            disabled={!canAddToFavorites}
+            aria-label="directions"
+            onClick={addToFavorites}
+          >
             <FavoritesIcon />
           </IconButton>
-        </>
+        </div>
       </Tooltip>
     </Paper>
   );
