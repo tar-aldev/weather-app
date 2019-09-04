@@ -136,18 +136,19 @@
   },
   "babel": {
     "plugins": [
-      [
-        "@babel/plugin-proposal-decorators",
-        {
-          "decoratorsBeforeExport": true
-        }
-      ]
+      ["@babel/plugin-proposal-decorators", {
+        "legacy": true
+      }],
+      ["@babel/plugin-proposal-class-properties", {
+        "loose": true
+      }]
     ],
     "presets": [
       "react-app"
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-proposal-decorators": "^7.4.4"
   }
 }

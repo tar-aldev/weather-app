@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Container, Typography, Box } from '@material-ui/core';
 import { observer } from 'mobx-react';
 

@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
-import { debounce } from 'lodash';
-
-import { withStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect } from 'react'
+import { weatherStore } from '../../mobx/weater.store';
+import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import Divider from '@material-ui/core/Divider';
@@ -10,13 +9,15 @@ import { Tooltip } from '@material-ui/core';
 
 import ClearIcon from '@material-ui/icons/Close';
 import FavoritesIcon from '@material-ui/icons/Bookmark';
+import SearchIcon from '@material-ui/icons/Search';
 
-const styles = theme => ({
+
+const useStyles = makeStyles(theme => ({
   root: {
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 800,
+    width: '100%',
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -29,64 +30,66 @@ const styles = theme => ({
     height: 28,
     margin: 4,
   },
-});
+}));
 
-class WeatherSearch extends Component {
+const WeatherSearch = () => {
 
-  constructor(props) {
-    super(props);
+  const classes = useStyles();
+  const [searchString, setSearchString] = useState('');
 
-    this.state = {
-      searchString: ''
+  /* TODO: remove after finishing city info */
+  useEffect(() => {
+    weatherStore.findWeatherByCityName('London');
+    return () => { };
+  }, [])
+  const onGetCityWeather = () => {
+    weatherStore.findWeatherByCityName(searchString);
+  }
+
+  const handleEnterClick = (e) => {
+    if (e.keyCode === 13) {
+      onGetCityWeather();
     }
   }
 
-  onInputChange = (e) => {
-    this.setState({
-      searchString: e.target.value
-    })
-    // debounce()
-  }
-
-  onInputClear = () => {
-    this.setState({
-      searchString: ''
-    })
-  }
-
-  render() {
-    const { classes } = this.props;
-    const { searchString } = this.state;
-
-    return (
-      <Paper className={classes.root}>
-        <InputBase
-          className={classes.input}
-          placeholder="What is the weather like in ..."
-          inputProps={{ 'aria-label': 'search google maps' }}
-          onChange={this.onInputChange}
-          value={searchString}
-        />
-        <IconButton
-          color="primary"
-          className={classes.iconButton}
-          disabled={!searchString.length}
-          aria-label="directions"
-          onClick={this.onInputClear}
-        >
-          <ClearIcon />
-        </IconButton>
-        <Divider className={classes.divider} orientation="vertical" />
-        <Tooltip title='Add city to bookmarks'>
-          <>
-            <IconButton color="primary" className={classes.iconButton} disabled={true} aria-label="directions">
-              <FavoritesIcon />
-            </IconButton>
-          </>
-        </Tooltip>
-      </Paper>
-    )
-  }
+  return (
+    <Paper className={classes.root}>
+      <InputBase
+        className={classes.input}
+        placeholder="What is the weather like in ..."
+        inputProps={{ 'aria-label': 'search google maps' }}
+        onChange={(e) => setSearchString(e.target.value)}
+        onKeyUp={handleEnterClick}
+        value={searchString}
+      />
+      <IconButton
+        color="primary"
+        className={classes.iconButton}
+        disabled={!searchString.length}
+        aria-label="directions"
+        onClick={onGetCityWeather}
+      >
+        <SearchIcon />
+      </IconButton>
+      <IconButton
+        color="primary"
+        className={classes.iconButton}
+        disabled={!searchString.length}
+        aria-label="directions"
+        onClick={() => setSearchString('')}
+      >
+        <ClearIcon />
+      </IconButton>
+      <Divider className={classes.divider} orientation="vertical" />
+      <Tooltip title='Add city to bookmarks'>
+        <>
+          <IconButton color="primary" className={classes.iconButton} disabled={true} aria-label="directions">
+            <FavoritesIcon />
+          </IconButton>
+        </>
+      </Tooltip>
+    </Paper>
+  );
 }
 
-export default withStyles(styles)(WeatherSearch);
+export default WeatherSearch;
