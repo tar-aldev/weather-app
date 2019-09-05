@@ -9,24 +9,27 @@ axios.interceptors.request.use((req) => {
   return req;
 })
 
-axios.interceptors.response.use(
+/* axios.interceptors.response.use(
   (response) => {
     return response;
   }, (error) => {
-    return error.response;
+    return new Error(error.response);
   }
-)
+) */
 
 const weatherService = () => {
   const { weatherApiIconBaseUrl, weatherApiBaseUrl } = variables;
 
   const modifyWeatherIconLink = (weatherInfo) => {
-    console.log(weatherInfo);
     const copy = cloneDeep(weatherInfo);
     copy.weather.forEach((weatherItem) => {
       weatherItem.icon = `${weatherApiIconBaseUrl}/${weatherItem.icon}.png`;
     })
     return copy;
+  }
+
+  const pickWeatherFields = (weatherItem) => {
+    return pick(weatherItem, ['coord', 'id', 'main', 'name', 'weather', 'wind']);
   }
 
   return {
@@ -36,8 +39,26 @@ const weatherService = () => {
           q: cityName
         }
       })
-      const modifiedData = modifyWeatherIconLink(data);
-      return pick(modifiedData, ['coord', 'id', 'main', 'name', 'weather', 'wind']);
+      if (data) {
+        pickWeatherFields(data);
+        const modifiedData = modifyWeatherIconLink(pickWeatherFields(data));
+        return modifiedData;
+      }
+    },
+    getFavoriteCitiesByIds: async (citiesIds) => {
+      const promises = citiesIds.map((cityId) => {
+        return axios.get(`${weatherApiBaseUrl}/weather`, {
+          params: {
+            id: cityId
+          }
+        })
+      })
+
+      const favoriteCitiesResponses = await Promise.all(promises);
+      return favoriteCitiesResponses.map((response) => {
+        const modifiedData = modifyWeatherIconLink(pickWeatherFields(response.data));
+        return modifiedData;
+      });
     }
   }
 }

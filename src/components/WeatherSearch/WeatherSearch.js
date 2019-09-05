@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { useObserver } from 'mobx-react';
+import { useFavoritesBtn } from '../../hooks/useFavoritesBtn';
 import { weatherStore } from '../../mobx/weater.store';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -32,16 +34,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const WeatherSearch = () => {
+const WeatherSearch = ({ foundCityWeather, favoriteCitiesIds, isLoading }) => {
 
   const classes = useStyles();
   const [searchString, setSearchString] = useState('');
-
-  /* TODO: remove after finishing city info */
-  useEffect(() => {
-    weatherStore.findWeatherByCityName('London');
-    return () => { };
-  }, [])
   const onGetCityWeather = () => {
     weatherStore.findWeatherByCityName(searchString);
   }
@@ -50,6 +46,22 @@ const WeatherSearch = () => {
     if (e.keyCode === 13) {
       onGetCityWeather();
     }
+  }
+
+  const addToFavorites = () => {
+    weatherStore.addCityToFavorites();
+    weatherStore.saveFavoriteCititesToLocalStorage();
+  }
+
+
+  let favoritesBtnDisabled = true;
+  let favoritesBtnText = 'Add to favorites';
+  if (foundCityWeather && favoriteCitiesIds.includes(foundCityWeather.id)) {
+    favoritesBtnText = 'Already in favorites';
+  }
+
+  if (foundCityWeather && !favoriteCitiesIds.includes(foundCityWeather.id)) {
+    favoritesBtnDisabled = false;
   }
 
   return (
@@ -65,7 +77,7 @@ const WeatherSearch = () => {
       <IconButton
         color="primary"
         className={classes.iconButton}
-        disabled={!searchString.length}
+        disabled={!searchString.length || isLoading}
         aria-label="directions"
         onClick={onGetCityWeather}
       >
@@ -81,12 +93,18 @@ const WeatherSearch = () => {
         <ClearIcon />
       </IconButton>
       <Divider className={classes.divider} orientation="vertical" />
-      <Tooltip title='Add city to bookmarks'>
-        <>
-          <IconButton color="primary" className={classes.iconButton} disabled={true} aria-label="directions">
+      <Tooltip title={favoritesBtnText}>
+        <div>
+          <IconButton
+            color="primary"
+            className={classes.iconButton}
+            aria-label="directions"
+            onClick={addToFavorites}
+            disabled={favoritesBtnDisabled}
+          >
             <FavoritesIcon />
           </IconButton>
-        </>
+        </div>
       </Tooltip>
     </Paper>
   );

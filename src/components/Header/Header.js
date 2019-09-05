@@ -7,6 +7,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Link } from '@reach/router';
+import { useObserver } from 'mobx-react';
+import { weatherStore } from '../../mobx/weater.store';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -18,15 +20,18 @@ export default function Header() {
 
   const classes = useStyles()
 
-  return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" className={classes.title}>
-          Weather app
-        </Typography>
-        <Button color="inherit" component={Link} to="/bookmarked">Bookmarked cities</Button>
-        <Button color="inherit" component={Link} to="/search">Search</Button>
-      </Toolbar>
-    </AppBar>
-  )
+  return useObserver(() => {
+    const { favoriteCitiesIds } = weatherStore;
+    return (
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" className={classes.title}>
+            Weather app
+          </Typography>
+          <Button color="inherit" component={Link} to="/bookmarked">Bookmarked cities ({favoriteCitiesIds.length})</Button>
+          <Button color="inherit" component={Link} to="/search">Search</Button>
+        </Toolbar>
+      </AppBar>
+    )
+  })
 }
