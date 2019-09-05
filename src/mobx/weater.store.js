@@ -7,16 +7,26 @@ export default class WeatherStore {
   @observable.ref favoriteCities = [];
   @observable.ref foundCityWeather = null;
   @observable isLoading = false;
+  @observable error = null;
 
   @action findWeatherByCityName = (cityName) => {
     this.isLoading = true;
     weatherService.getWeatherByCityName(cityName)
-      .then(this.findWeatherByCityNameSuccess)
+      .then((response) => {
+        this.findWeatherByCityNameSuccess(response)
+      })
+      .catch((error) => { this.findWeatherByCityNameFailure(error.response.data.message) })
   }
 
   @action findWeatherByCityNameSuccess = (response) => {
+    console.log('success')
     this.isLoading = false;
     this.foundCityWeather = response;
+  }
+
+  @action findWeatherByCityNameFailure = (error) => {
+    this.isLoading = false;
+    this.error = error;
   }
 
   @action resetFoundCityWeather = () => {
@@ -24,6 +34,7 @@ export default class WeatherStore {
   }
 
   @action addCityToFavorites = () => {
+    console.log('add to favorites');
     this.favoriteCitiesIds = [...this.favoriteCitiesIds, this.foundCityWeather.id];
   }
 
@@ -43,6 +54,12 @@ export default class WeatherStore {
 
   @action saveFavoriteCititesToLocalStorage = () => {
     saveToLocalStorage('favoriteCitiesIds', this.favoriteCitiesIds);
+  }
+
+  @action removeCityFromBookmarked = (cityId) => {
+    this.favoriteCitiesIds = this.favoriteCitiesIds.filter((id) => id !== cityId);
+    saveToLocalStorage('favoriteCitiesIds', this.favoriteCitiesIds);
+    this.favoriteCities = this.favoriteCities.filter((city) => city.id !== cityId);
   }
 }
 

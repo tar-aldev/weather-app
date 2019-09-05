@@ -16,8 +16,8 @@ const App = () => {
     <>
       <Header />
       <Router>
-        <SearchPage path='search' />
-        <FavoritesPage path='bookmarked' />
+        <SearchPage path='search' breadcrump='Search for weather in city' />
+        <FavoritesPage path='bookmarked' breadcrump='Bookmarked cities' />
         <Redirect from='/' to='search' />
       </Router>
     </>

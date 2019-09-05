@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { useObserver } from 'mobx-react';
+import { useFavoritesBtn } from '../../hooks/useFavoritesBtn';
 import { weatherStore } from '../../mobx/weater.store';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -32,16 +34,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const WeatherSearch = ({ canAddToFavorites }) => {
+const WeatherSearch = ({ foundCityWeather, favoriteCitiesIds, isLoading }) => {
 
   const classes = useStyles();
   const [searchString, setSearchString] = useState('');
-
-  /* TODO: remove after finishing city info */
-  useEffect(() => {
-    weatherStore.findWeatherByCityName('London');
-    return () => { };
-  }, [])
   const onGetCityWeather = () => {
     weatherStore.findWeatherByCityName(searchString);
   }
@@ -57,7 +53,12 @@ const WeatherSearch = ({ canAddToFavorites }) => {
     weatherStore.saveFavoriteCititesToLocalStorage();
   }
 
-  console.log(canAddToFavorites);
+
+  let favoritesBtnDisabled = true;
+  if (foundCityWeather) {
+    favoritesBtnDisabled = favoriteCitiesIds.includes(foundCityWeather.id)
+  }
+
   return (
     <Paper className={classes.root}>
       <InputBase
@@ -71,7 +72,7 @@ const WeatherSearch = ({ canAddToFavorites }) => {
       <IconButton
         color="primary"
         className={classes.iconButton}
-        disabled={!searchString.length}
+        disabled={!searchString.length || isLoading}
         aria-label="directions"
         onClick={onGetCityWeather}
       >
@@ -87,14 +88,14 @@ const WeatherSearch = ({ canAddToFavorites }) => {
         <ClearIcon />
       </IconButton>
       <Divider className={classes.divider} orientation="vertical" />
-      <Tooltip title='Add city to bookmarks'>
+      <Tooltip title='Add to favorites'>
         <div>
           <IconButton
             color="primary"
             className={classes.iconButton}
-            disabled={!canAddToFavorites}
             aria-label="directions"
             onClick={addToFavorites}
+            disabled={favoritesBtnDisabled}
           >
             <FavoritesIcon />
           </IconButton>
