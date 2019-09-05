@@ -1,6 +1,6 @@
 import React from 'react'
 import { Typography, Card, CardContent, CardHeader, makeStyles, Box } from '@material-ui/core';
-import weatherService from '../../services/weather.service';
+import WeatherInfoBase from '../WeatherInfoBase/WeatherInfoBase';
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -9,8 +9,6 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function WeatherInfo({ foundCityWeather }) {
-  console.log(foundCityWeather)
-
   const classes = useStyles();
 
   if (foundCityWeather) {
@@ -19,34 +17,7 @@ export default function WeatherInfo({ foundCityWeather }) {
         <CardHeader
           title={<CardTitle cityName={foundCityWeather.name} lat={foundCityWeather.coord.lat} lon={foundCityWeather.coord.lon} />}
         />
-        <CardContent>
-          {
-            foundCityWeather.weather.map((weatherItem) => (
-              <Box key={weatherItem.id} display='flex' alignItems='center'>
-                <img src={weatherItem.icon} alt="" />
-                {weatherItem.description}
-              </Box>
-            ))
-          }
-          <Typography component='p'>
-            Wind speed: {foundCityWeather.wind.speed} m/s
-          </Typography>
-          <Typography component='p'>
-            Temperature: {foundCityWeather.main.temp} &deg;C
-          </Typography>
-          <Typography component='p'>
-            Temperature Min: {foundCityWeather.main.temp_min} &deg;C
-          </Typography>
-          <Typography component='p'>
-            Temperature Max: {foundCityWeather.main.temp_max} &deg;C
-          </Typography>
-          <Typography component='p'>
-            Pressure: {foundCityWeather.main.pressure} &deg;C
-          </Typography>
-          <Typography component='p'>
-            Humidity: {foundCityWeather.main.humidity}
-          </Typography>
-        </CardContent>
+        <WeatherInfoBase cityWeather={foundCityWeather} />
       </Card>
     )
   } else {

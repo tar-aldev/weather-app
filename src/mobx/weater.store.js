@@ -11,6 +11,7 @@ export default class WeatherStore {
 
   @action findWeatherByCityName = (cityName) => {
     this.isLoading = true;
+    this.resetFoundCityWeather()
     weatherService.getWeatherByCityName(cityName)
       .then((response) => {
         this.findWeatherByCityNameSuccess(response)
@@ -19,13 +20,14 @@ export default class WeatherStore {
   }
 
   @action findWeatherByCityNameSuccess = (response) => {
-    console.log('success')
     this.isLoading = false;
+    this.error = null;
     this.foundCityWeather = response;
   }
 
   @action findWeatherByCityNameFailure = (error) => {
     this.isLoading = false;
+    this.resetFoundCityWeather();
     this.error = error;
   }
 
@@ -33,18 +35,28 @@ export default class WeatherStore {
     this.foundCityWeather = null;
   }
 
+  @action resetStateForSearchPage = () => {
+    this.resetFoundCityWeather();
+    this.error = null;
+  }
+
   @action addCityToFavorites = () => {
-    console.log('add to favorites');
     this.favoriteCitiesIds = [...this.favoriteCitiesIds, this.foundCityWeather.id];
   }
 
   @action getFavoriteCities = () => {
+    this.isLoading = true;
     this.syncFavoriteCitiesWithLocalStorage()
     weatherService.getFavoriteCitiesByIds(this.favoriteCitiesIds)
       .then(this.getFavoriteCitiesByIdsSuccess)
   }
 
+  @action resetFavoriteCities = () => {
+    this.favoriteCities = [];
+  }
+
   @action getFavoriteCitiesByIdsSuccess = (response) => {
+    this.isLoading = false;
     this.favoriteCities = response;
   }
 

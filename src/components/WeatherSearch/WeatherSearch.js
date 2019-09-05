@@ -55,8 +55,13 @@ const WeatherSearch = ({ foundCityWeather, favoriteCitiesIds, isLoading }) => {
 
 
   let favoritesBtnDisabled = true;
-  if (foundCityWeather) {
-    favoritesBtnDisabled = favoriteCitiesIds.includes(foundCityWeather.id)
+  let favoritesBtnText = 'Add to favorites';
+  if (foundCityWeather && favoriteCitiesIds.includes(foundCityWeather.id)) {
+    favoritesBtnText = 'Already in favorites';
+  }
+
+  if (foundCityWeather && !favoriteCitiesIds.includes(foundCityWeather.id)) {
+    favoritesBtnDisabled = false;
   }
 
   return (
@@ -88,7 +93,7 @@ const WeatherSearch = ({ foundCityWeather, favoriteCitiesIds, isLoading }) => {
         <ClearIcon />
       </IconButton>
       <Divider className={classes.divider} orientation="vertical" />
-      <Tooltip title='Add to favorites'>
+      <Tooltip title={favoritesBtnText}>
         <div>
           <IconButton
             color="primary"

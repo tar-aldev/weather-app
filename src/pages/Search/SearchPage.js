@@ -17,7 +17,7 @@ const SearchPage = ({ breadcrump }) => {
 
   useEffect(() => {
     return () => {
-      weatherStore.resetFoundCityWeather()
+      weatherStore.resetStateForSearchPage()
     };
   }, [])
 
@@ -36,7 +36,11 @@ const SearchPage = ({ breadcrump }) => {
           <WeatherSearch foundCityWeather={foundCityWeather} favoriteCitiesIds={favoriteCitiesIds} isLoading={isLoading} />
         </Box>
         {foundCityWeather && <WeatherSearchResult foundCityWeather={foundCityWeather} />}
-        {isLoading && <CircularProgress className={classes.progress} />}
+        {isLoading && (
+          <Box display='flex' justifyContent='center'>
+            <CircularProgress />
+          </Box>
+        )}
         {error && (
           <Typography variant='h6' className={classes.errorMessage}>
             {error}

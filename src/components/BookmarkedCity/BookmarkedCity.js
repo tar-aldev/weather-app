@@ -3,6 +3,7 @@ import { Grid, Card, CardContent, CardHeader, Box, Typography, CardActions, Icon
 import DeleteIcon from '@material-ui/icons/CloseOutlined';
 import { makeStyles } from '@material-ui/styles';
 import { weatherStore } from '../../mobx/weater.store';
+import WeatherInfoBase from '../WeatherInfoBase/WeatherInfoBase';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -24,35 +25,7 @@ export default function BookmarkedCity({ city }) {
     <Grid item>
       <Card className={classes.card}>
         <CardHeader title={<BookmarkedCityHeader title={city.name} removeCityFromBookmarked={removeCityFromBookmarked} />} />
-
-        <CardContent>
-          {
-            city.weather.map((weatherItem) => (
-              <Box key={weatherItem.id} display='flex' alignItems='center'>
-                <img src={weatherItem.icon} alt="" />
-                {weatherItem.description}
-              </Box>
-            ))
-          }
-          <Typography component='p'>
-            Wind speed: {city.wind.speed} m/s
-          </Typography>
-          <Typography component='p'>
-            Temperature: {city.main.temp} &deg;C
-          </Typography>
-          <Typography component='p'>
-            Temperature Min: {city.main.temp_min} &deg;C
-          </Typography>
-          <Typography component='p'>
-            Temperature Max: {city.main.temp_max} &deg;C
-          </Typography>
-          <Typography component='p'>
-            Pressure: {city.main.pressure} &deg;C
-          </Typography>
-          <Typography component='p'>
-            Humidity: {city.main.humidity}
-          </Typography>
-        </CardContent>
+        <WeatherInfoBase cityWeather={city} />
       </Card>
     </Grid>
   )
